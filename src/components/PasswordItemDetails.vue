@@ -108,7 +108,8 @@ import {
   IonIcon,
   IonInput,
   IonTextarea,
-  modalController
+  modalController,
+  alertController
 } from '@ionic/vue'
 import { closeOutline, copyOutline } from 'ionicons/icons'
 import { useItemsStore } from '@/stores/itemsStore'
@@ -145,7 +146,16 @@ const copyToClipboard = (data: string) => {
 const cancel = () => {
   modalController.dismiss(null, 'cancel')
 }
-const remove = () => {
+const remove = async () => {
+  const alert = await alertController.create({
+    header: 'Are you sure?',
+    buttons: ['Cancel', 'Delete'],
+  })
+
+  await alert.present()
+  const { role } = await alert.onWillDismiss()
+  if (role === 'cancel') return
+
   modalController.dismiss(item, 'delete')
 }
 const save = () => {
