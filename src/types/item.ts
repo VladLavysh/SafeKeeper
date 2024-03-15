@@ -3,6 +3,7 @@ export interface Item {
   name: string;
   login: string;
   password: string;
+  group: 'top' | 'standard' | 'low';
   notes?: string;
 }
 

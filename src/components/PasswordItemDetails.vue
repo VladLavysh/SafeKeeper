@@ -18,7 +18,7 @@
             <ion-item>
               <ion-input
                 v-model="item.name"
-                label="Name"
+                label="Name:"
                 label-placement="floating"
                 color="secondary"
                 type="text"
@@ -30,7 +30,7 @@
             <ion-item>
               <ion-input
                 v-model="item.login"
-                label="Login"
+                label="Login:"
                 label-placement="floating"
                 color="secondary"
                 type="text"
@@ -51,7 +51,7 @@
             <ion-item>
               <ion-input
                 v-model="item.password"
-                label="Password"
+                label="Password:"
                 label-placement="floating"
                 color="secondary"
                 type="text"
@@ -70,9 +70,25 @@
               </ion-input>
             </ion-item>
             <ion-item>
+              <ion-select
+                v-model="item.group"
+                interface="action-sheet"
+                label="Group:"
+                label-placement="floating"
+              >
+                <ion-select-option
+                  v-for="group in groups"
+                  :key="group"
+                  :value="group"
+                >
+                  {{ group }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
               <ion-textarea
                 v-model="item.notes"
-                label="Notes (optional)"
+                label="Notes (optional):"
                 label-placement="floating"
                 helper-text="Enter valid data"
                 placeholder="..."
@@ -108,6 +124,8 @@ import {
   IonIcon,
   IonInput,
   IonTextarea,
+  IonSelect,
+  IonSelectOption,
   modalController,
   alertController
 } from '@ionic/vue'
@@ -127,8 +145,10 @@ const newItem: Item = {
   name: '',
   login: '',
   password: '',
-  notes: '',
+  group: 'top',
+  notes: ''
 }
+const groups: string[] = ['top', 'standard', 'low']
 const item = ref<Item>(itemId ? getItem(itemId) : newItem)
 const isEdited = ref<boolean>(false)
 
@@ -174,11 +194,16 @@ ion-content {
 ion-label {
   margin-left: 15px;
 }
+ion-list {
+  border-radius: 10px;
+}
 .element-form {
   margin: 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  border-radius: 10px;
+  box-sizing: border-box;
 }
 .copy-btn {
   position: absolute;
@@ -193,5 +218,16 @@ ion-label {
 }
 .action-buttons ion-button {
   width: 100%;
+}
+.color-box {
+  width: 20px;
+  height: 20px;
+  margin: 5px;
+  border-radius: 5px;
+  border: 1px solid #000;
+  cursor: pointer;
+}
+.color-label {
+  margin-right: 35px;
 }
 </style>

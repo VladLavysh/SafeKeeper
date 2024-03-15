@@ -3,7 +3,7 @@
     v-if="item"
     :detail="false"
     button
-    color="tertiary"
+    :color="getColor(item.group)"
     class="list-item"
     @click="openModal"
   >
@@ -19,12 +19,31 @@ const { item } = defineProps({
 })
 const emit = defineEmits(['openModal'])
 
+const getColor = (group: string) => {
+  switch (group) {
+    case 'top':
+      return 'success'
+    case 'standard':
+      return 'warning'
+    case 'low':
+      return 'tertiary'
+    default:
+      return 'primary'
+  }
+}
+
 const openModal = () => {
   emit('openModal', item?.id)
 }
 </script>
 
 <style scoped>
+.item-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 ion-label {
   text-align: center;
 }
