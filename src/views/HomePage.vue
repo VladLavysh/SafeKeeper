@@ -3,6 +3,7 @@
     <ion-header :translucent="true">
       <ion-searchbar
         v-model="searchItem"
+        class="ion-padding-top ion-padding-bottom"
         placeholder="Find Element"
         autocapitalize="off"
         :debounce="500"
@@ -15,17 +16,19 @@
         <ion-refresher-content></ion-refresher-content>
       </ion-refresher>
 
-      <ion-list v-if="results.length">
-        <PasswordItem
-          v-for="item in results"
-          :key="item.id"
-          :item="item"
-          @openModal="openModal"
-        />
-      </ion-list>
-      <ion-text v-else>
-        <h4>No items found</h4>
-      </ion-text>
+      <div class="wrapper">
+        <ion-list v-if="results.length">
+          <PasswordItem
+            v-for="item in results"
+            :key="item.id"
+            :item="item"
+            @openModal="openModal"
+          />
+        </ion-list>
+        <ion-text v-else>
+          <h4>No items found</h4>
+        </ion-text>
+      </div>
     </ion-content>
 
     <ion-fab slot="fixed" vertical="bottom" horizontal="end">
@@ -95,6 +98,14 @@ const refresh = (ev: CustomEvent) => {
 </script>
 
 <style scoped>
+  .wrapper {
+    height: 100%;
+    padding-top: 10px;
+    background-color: #1e1e1e;
+  }
+  ion-page {
+    --background-color: #1e1e1e !important;
+  }
   ion-text {
     display: flex;
     justify-content: center;

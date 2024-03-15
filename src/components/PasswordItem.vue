@@ -3,7 +3,7 @@
     v-if="item"
     :detail="false"
     button
-    color="success"
+    color="tertiary"
     class="list-item"
     @click="openModal"
   >
