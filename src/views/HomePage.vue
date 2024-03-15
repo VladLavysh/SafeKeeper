@@ -1,9 +1,13 @@
 <template>
   <ion-page>
     <ion-header :translucent="true">
-      <ion-toolbar>
-        <ion-title>Inbox</ion-title>
-      </ion-toolbar>
+      <ion-searchbar
+        v-model="searchItem"
+        placeholder="Find Element"
+        autocapitalize="off"
+        :debounce="500"
+        @ionInput="handleInput($event)"
+      />
     </ion-header>
 
     <ion-content :fullscreen="true">
@@ -11,16 +15,24 @@
         <ion-refresher-content></ion-refresher-content>
       </ion-refresher>
 
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Inbox</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
-      <ion-list>
-        <MessageListItem v-for="message in messages" :key="message.id" :message="message" />
+      <ion-list v-if="results.length">
+        <PasswordItem
+          v-for="item in results"
+          :key="item.id"
+          :item="item"
+          @openModal="openModal"
+        />
       </ion-list>
+      <ion-text v-else>
+        <h4>No items found</h4>
+      </ion-text>
     </ion-content>
+
+    <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+      <ion-fab-button color="light" @click="openModal(null)">
+        <ion-icon :icon="addOutline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
   </ion-page>
 </template>
 
@@ -32,18 +44,68 @@ import {
   IonPage,
   IonRefresher,
   IonRefresherContent,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/vue';
-import MessageListItem from '@/components/MessageListItem.vue';
-import { getMessages, Message } from '@/data/messages';
-import { ref } from 'vue';
+  IonSearchbar,
+  IonFab,
+  IonFabButton,
+  IonIcon,
+  IonText,
+  modalController
+} from '@ionic/vue'
+import { addOutline } from 'ionicons/icons'
+import { ref } from 'vue'
+import { Item, Action } from '@/types/item'
+import { useItemsStore } from '@/stores/itemsStore'
+import presentToast from '@/composables/presentToast'
+import PasswordItem from '@/components/PasswordItem.vue'
+import ItemModal from '@/components/PasswordItemDetails.vue'
 
-const messages = ref<Message[]>(getMessages());
+const { items, manageItem, getItems } = useItemsStore()
+getItems()
+
+const searchItem = ref<string>('')
+const results = ref<Item[]>(items)
+
+const handleInput = (event: CustomEvent) => {
+  const target = event.target as HTMLInputElement
+  const query = target.value?.toLowerCase()
+  results.value = items.filter((el: Item) => el.name.toLowerCase().includes(query))
+}
+
+const openModal = async (id: string | null) => {
+  const modal = await modalController.create({
+      component: ItemModal,
+      componentProps: {
+        itemId: id
+      }
+    })
+  modal.present()
+
+  const { data, role } = await modal.onWillDismiss()
+  if (role !== 'cancel') {
+    manageItem({...data.value}, role as Action)
+    presentToast(`Item ${role}d`, role as string)
+  }
+}
 
 const refresh = (ev: CustomEvent) => {
   setTimeout(() => {
-    ev.detail.complete();
-  }, 3000);
-};
+    ev.detail.complete()
+  }, 3000)
+}
 </script>
+
+<style scoped>
+  ion-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  ion-list {
+    display: flex;
+    justify-content: start;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 15px 10px;
+  }
+</style>
